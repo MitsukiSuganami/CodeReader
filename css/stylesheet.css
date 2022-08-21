@@ -1,14 +1,11 @@
 #photo-area.viewport {
-    height: 240px;
-    width: 320px;
-}
- 
-#photo-area.viewport canvas, video {
-    float: left;
-    height: 240px;
-    width: 320px;
-}
- 
-#photo-area.viewport canvas.drawingBuffer, video.drawingBuffer {
-    margin-left: -320px;
-}
+    width: 100%;
+    height: auto;
+ }
+ #photo-area.viewport canvas, video {
+    width: 100%;
+    height: auto;
+ }
+ #photo-area.viewport canvas.drawingBuffer, video.drawingBuffer {
+    margin-left: -100%;
+ }

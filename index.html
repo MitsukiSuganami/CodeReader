@@ -20,9 +20,9 @@ class BarcodeReader {
     inputId="barcode-input";
     //----
 
-    videoSize = {w:640, h:480};
-    viewSize = {w:300, h:200};
-    targetSize = {w:250, h:100, border: 2};
+    videoSize = {w:1280, h:960};
+    viewSize = {w:640, h:480};
+    targetSize = {w:550, h:150, border: 2};
     wrapperElement=null;//この領域を表示非表示にする
     viewElement = null;//表示される画像洋装
     viewContext = null;//表示される画像要素のコンテキスト
@@ -406,7 +406,7 @@ class BarcodeReader {
 }
 
 //エントリーポイント
-new BarcodeReader(document.getElementById("barcode-scanner"),640,480,300,200,200,100,2,100,3);
+new BarcodeReader(document.getElementById("barcode-scanner"),1280,960,640,480,550,150,2,100,3);
 </script>
 </body>
 </html>

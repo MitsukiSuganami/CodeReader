@@ -1,55 +1,130 @@
+// 初期化
 Quagga.init({
     inputStream: {
-        name: 'Live',
-        type: 'LiveStream',
-        target: document.querySelector('#interactive'), //埋め込んだdivのID
+        name: "Live",
+        type: "LiveStream",
+        target: document.querySelector('#photo-area'),
         constraints: {
-            facingMode: 'environment'
+            decodeBarCodeRate: 3,
+            successTimeout: 500,
+            codeRepetition: true,
+            tryVertical: false,
+            frameRate: 15,
+            width: 640,
+            height: 480,
+            facingMode: "environment"
         },
-
-        area: { //必要ならバーコードの読み取り範囲を調整できる（この場合は、上30%/下30%は読み取りしない）
-            top: "30%",
-            right: "0%",
-            left: "0%",
-        bottom: "30%" }
     },
-
-    locator: {
-        patchSize: 'medium',
-        halfSample: true
-    },
-
-    numOfWorkers: 2,
     decoder: {
-        readers: ['ean_reader'] //ISBNは基本的にこれ（他にも種類あり）
+        readers: [
+            "ean_reader"
+        ]
     },
-    locate: true
-},
-err => {
-    if (!err) {
-        Quagga.start();
-        // alert("started");
+}, function (err) {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    Quagga.start();
+
+});
+
+// バーコードを検出したときの処理
+Quagga.onProcessed(function (result) {
+    var drawingCtx = Quagga.canvas.ctx.overlay,
+        drawingCanvas = Quagga.canvas.dom.overlay;
+    if (result) {
+        // 認識したバーコードを囲む
+        if (result.boxes) {
+            drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+            result.boxes.filter(function (box) {
+                return box !== result.box;
+            }).forEach(function (box) {
+                Quagga.ImageDebug.drawPath(box, {
+                    x: 0,
+                    y: 1
+                }, drawingCtx, {
+                    color: "white",
+                    lineWidth: 2
+                });
+            });
+        }
+        // 読み取ったバーコードを囲む
+        if (result.box) {
+            Quagga.ImageDebug.drawPath(result.box, {
+                x: 0,
+                y: 1
+            }, drawingCtx, {
+                color: "#01f965",
+                lineWidth: 2
+            });
+        }
+        // 読み取ったバーコードに線を引く
+        if (result.codeResult && result.codeResult.code) {
+            Quagga.ImageDebug.drawPath(result.line, {
+                x: 'x',
+                y: 'y'
+            }, drawingCtx, {
+                color: '#00b900',
+                lineWidth: 2
+            });
+        }
     }
 });
 
-Quagga.onDetected(success => {
-    const code = success.codeResult.code;
-    if (calc(code)) alert(code);
+let scanResults = [];
+let resultBuffer = [];
+
+// 検知後の処理
+Quagga.onDetected(function (result) {
+    // １つでもエラー率0.19以上があれば除外
+    let isErr = false
+    $.each(result.codeResult.decodedCodes, function (id, error) {
+        if (error.error != undefined) {
+            if (parseFloat(error.error) > 0.19) {
+                isErr = true
+            }
+        }
+    })
+    if (isErr) return
+
+    // エラー率の中央値が0.1以上なら除外
+    const errors = result.codeResult.decodedCodes.filter((_) => _.error !== undefined).map((_) => _.error)
+    const median = _getMedian(errors)
+    if (median > 0.1) {
+        return
+    }
+
+    // 3回連続で同じ値だった場合のみ採用
+    scanResults.push(result.codeResult.code)
+    if (scanResults.length < 3) {
+        return
+    }
+    if (scanResults[0] !== scanResults[1]) {
+        scanResults.shift()
+        return
+    }
+
+    // 複数回目は前回と値が違う時だけ発火
+    if (resultBuffer.length > 0) {
+        if (resultBuffer.slice(-1)[0] === result.codeResult.code) {
+            return
+        }
+    }
+
+    resultBuffer.push(result.codeResult.code);
+    $('#result')[0].value = result.codeResult.code;
+
+    if (confirm(result.codeResult.code)) {
+        document.dispatchEvent(event);
+    }
 });
 
-const calc = isbn => {
-    const arrIsbn = isbn.
-    toString().
-    split("").
-    map(num => parseInt(num));
-    let remainder = 0;
-    const checkDigit = arrIsbn.pop();
-
-    arrIsbn.forEach((num, index) => {
-         remainder += num * (index % 2 === 0 ? 1 : 3);
-    });
-    remainder %= 10;
-    remainder = remainder === 0 ? 0 : 10 - remainder;
-
-    return checkDigit === remainder;
-};
+// 中央値を取得
+function _getMedian(arr) {
+    arr.sort((a, b) => a - b)
+    const half = Math.floor(arr.length / 2)
+    if (arr.length % 2 === 1)
+        return arr[half]
+    return (arr[half - 1] + arr[half]) / 2.0
+}

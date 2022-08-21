@@ -23,7 +23,7 @@ const startScanner = () => {
         },
         decoder: {
             readers: [
-                "ean_reader"
+                "EAN_reader"
             ]
         },
 

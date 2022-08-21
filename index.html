@@ -1,124 +1,389 @@
-<!-- <!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <link rel="stylesheet" href="css/stylesheet.css">
-    </head>
-    <body>
-        <h3>バーコード</h3>
-        <h4>JAN/EAN/UPC Mode</h4>
-        <div id="photo-area" class="viewport"></div>
-        <script src="js/jquery-3.4.1.min.js" type="text/javascript"></script>
-        <script src="js/quagga.min.js" type="text/javascript"></script>
-        <script src="js/script.js" type="text/javascript"></script>
-        <p>最下部</p>
-    </body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.1, maximum-scale=4,user-scalable=yes">
-<!-- quaggaJSの読み込み -->
-<script src="js/quagga.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バーコードリーダーテスト</title>
+    
+    <script src="js/quagga.min.js"></script>
+</head>
+<body>
+<div clas=""><input type="tel" id="barcode-input" maxlength="13" /><button onClick="toggleScan()">スキャン開始/停止</button></div>
+<div id="barcode-wrapper" style="visibility: hidden; border: 2px solid #099;">
+    <canvas id="barcode-view"></canvas>
+    <p id="message">カメラ初期化中です</p>
+</div>
+
 <script>
-var DetectedCount=0,DetectedCode="";
-var video,tmp,tmp_ctx,jan,prev,prev_ctx,w,h,mw,mh,x1,y1;
-window.addEventListener('load',function(event){
-  video=document.createElement('video');
-  video.setAttribute("autoplay","");
-  video.setAttribute("muted","");
-  video.setAttribute("playsinline","");
-  video.onloadedmetadata = function(e){video.play();};
-  prev=document.getElementById("preview");
-  prev_ctx=prev.getContext("2d");
-  tmp = document.createElement('canvas');
-  tmp_ctx = tmp.getContext("2d");
-  jan=document.getElementById("jan");
 
-  //カメラ使用の許可ダイアログが表示される
-  navigator.mediaDevices.getUserMedia(
+//スキャナの表示非表示切り替え
+const warpper = document.getElementById("barcode-wrapper");
+let blnCameraInit = false;//カメラ初期化が正常終了したかどうか
+
+//生の映像　ページには表示しない
+const video = document.createElement("video");
+video.muted=true;
+video.playsInline=true;
+
+//videoのサイズ【カメラの画素数に合わせて入力】
+const videoSize = {
+    w: 640,
+    h: 480
+};
+
+//表示領域のサイズ【任意の値を入力】
+const viewSize = {
+    w: 300,
+    h: 200
+};
+
+//表示領域用のパラメータ 
+const viewParam = {
+    init: false,
+    sx: 0,
+    sy: 0,
+    sw: 0,
+    sh: 0,
+    dx: 0,
+    dy: 0,
+    dw: 0,
+    dh: 0
+};
+
+//バーコードスキャン部分のサイズとガイドの太さ【任意の値を入力】
+const targetSize = {
+    w: 200,
+    h: 100,
+    border: 2
+};
+
+//バーコードスキャン部分のパラメータ
+const targetParam = {
+    sx: 0,
+    sy: 0,
+    sw: 0,
+    sh: 0,
+    dx: 0,
+    dy: 0,
+    dw: 0,
+    dh: 0
+};
+
+//バーコードガイドのパラメータ
+const sqParam = {
+    valid : false,
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0
+};
+
+// Quagga用のパラメータ
+const qConfig={
+  decoder: { 
+    readers: ["codabar_reader"],
+    multiple: false, //同時に複数のバーコードを解析しない
+  },
+  src:''//後から指定
+};
+
+//線画領域
+const barView = document.getElementById("barcode-view");
+//　線画領域のコンテキスト取得
+const barViewCtx = barView.getContext("2d");
+
+//　内部処理用のバーコード領域のコンテキスト取得
+const barcodeArea = document.createElement("canvas");
+const barcodeAreaCtx=barcodeArea.getContext("2d");
+
+const message = document.getElementById("message");
+
+// バーコード表示要素
+const barInput = document.getElementById("barcode-input");
+
+//スキャンのインターバル(ミリ秒)
+const INTERVAL = 100;
+
+//コードのエラーチェック回数
+const VALIDATION = 3;
+let validationCnt = 0;
+let validationCode = "";
+
+// スキャンされた回数　-1の時スキャンしない
+let scanningCnt = -1; 
+let reserveEnd=null;
+
+function initBarcodeScaner() {
+    blnCameraInit = false;
+    
+    //カメラ使用の許可ダイアログが表示される
+    navigator.mediaDevices.getUserMedia(
     //マイクはオフ, カメラの設定   背面カメラを希望する 640×480を希望する
-    {"audio":false,"video":{"facingMode":"environment","width":{"ideal":640},"height":{"ideal":480}}}
-  ).then( //許可された場合
+    {"audio":false,"video":{facingMode:"environment","width":{"ideal": videoSize.w},"height":{"ideal": videoSize.h}}}
+    ).then(
+    //カメラと連携が取れた場合
     function(stream){
-      video.srcObject = stream;
-      //0.5秒毎にスキャンする
-      setTimeout(Scan,500,true);
-    }
-  ).catch( //許可されなかった場合
-    function(err){jan.value+=err+'\n';}
-  );
+        video.srcObject = stream;
 
-  function Scan(first){
-    if(first){
-      //選択された幅高さ
-      w=video.videoWidth;
-      h=video.videoHeight;
-      //画面上の表示サイズ
-      prev.style.width=(w/2)+"px";
-      prev.style.height=(h/2)+"px";
-      //内部のサイズ
-      prev.setAttribute("width",w);
-      prev.setAttribute("height",h);
-      mw=w*0.9;
-      mh=w*0.2;
-      x1=(w-mw)/2;
-      y1=(h-mh)/2;
-    }
-    prev_ctx.drawImage(video,0,0,w,h);
-    prev_ctx.beginPath();
-    prev_ctx.strokeStyle="rgb(255,0,0)";
-    prev_ctx.lineWidth=2;
-    prev_ctx.rect(x1,y1,mw,mh);
-    prev_ctx.stroke();
-    tmp.setAttribute("width",mw);
-    tmp.setAttribute("height",mh);
-    tmp_ctx.drawImage(prev,x1,y1,mw,mh,0,0,mw,mh);
+        //Quaggaのスキャンイベント
+        Quagga.onDetected(function (result) {
+            //スキャンを止める
+            if (scanningCnt < 0) {
+                //遅延してスキャンデータが来た場合は無視
+                return;
+            }
 
-    tmp.toBlob(function(blob){
+            if (VALIDATION <= 1) {
+                scanEnd();
+                //コードをセット
+                barInput.value=result.codeResult.code;
+            } else {
+                if (validationCode==result.codeResult.code) {
+                    validationCnt++;
+                    if (VALIDATION <= validationCnt) {
+                        scanEnd();
+                        //コードをセット
+                        barInput.value=result.codeResult.code;
+                    }
+                } else {
+                    validationCode=result.codeResult.code;
+                    validationCnt = 1;
+                }
+            }
+        });
+
+        blnCameraInit = true;
+        message.innerHTML="スキャンしてください";
+    }
+    ).catch(
+    //エラー時
+    function(err){
+        switch(err.message) {
+        case "Requested device not found":
+            message.innerHTML="カメラ取得に失敗しました";
+            break;
+        default:
+            message.innerHTML=err.message;
+        }
+
+    　}
+    );
+}
+
+function initParam() {
+
+    //すでに初期化されていた場合は処理しない
+    if (viewParam.init) {
+        return;
+    }
+
+    //実際取得したサイズは要求したサイズと違う際は上書きされる。
+    //videoが開始されていないと0になる
+    videoSize.w=video.videoWidth
+    videoSize.h=video.videoHeight;
+    
+    //線画領域のサイズセット
+    //barView.style.width = viewSize.w;
+    //barView.style.height = viewSize.h;
+
+    //canvasは属性値でサイズを指定する必要がある
+    barView.setAttribute("width",viewSize.w);
+    barView.setAttribute("height",viewSize.h);
+    
+    
+    //表示領域の計算
+    if (videoSize.w <= viewSize.w) {
+        //元のサイズの方が小さかったらそのまま
+        viewParam.sx = 0;
+        viewParam.sw = videoSize.w;
+        
+        viewParam.dx = 0;
+        viewParam.dw = videoSize.w;
+    } else {
+        //中央部を取得
+        let wk = videoSize.w - viewSize.w;
+        if (wk < 0) {
+            message.innerHTML="サイズ設定不備(view-X)";
+            blnCameraInit = false;
+            return;
+        }
+        wk = wk /2; //中央寄せするので÷2
+
+        viewParam.sx = wk;
+        viewParam.sw = viewSize.w;
+        
+        viewParam.dx = 0;
+        viewParam.dw = viewSize.w;
+    }
+    if (videoSize.h <= viewSize.h) {
+        //元のサイズの方が小さかったらそのまま
+        viewParam.sy = 0;
+        viewParam.sh = videoSize.h;
+        
+        viewParam.dy = 0;
+        viewParam.dh = videoSize.h;
+    } else {
+        //中央部を取得
+        let wk = videoSize.h - viewSize.h;
+        if (wk < 0) {
+            message.innerHTML="サイズ設定不備(view-Y)";
+            blnCameraInit = false;
+            return;
+        }
+        wk = wk /2; //中央寄せするので÷2
+
+        viewParam.sy = wk;
+        viewParam.sh = viewSize.h;
+        
+        viewParam.dy = 0;
+        viewParam.dh = viewSize.h;
+    }
+
+    //バーコードスキャン部分の計算
+    if (videoSize.w <= targetSize.w) {
+        //元のサイズの方が小さかったらそのまま
+        targetParam.sx = 0;
+        targetParam.sw = videoSize.w;
+        
+        targetParam.dx = 0;
+        targetParam.dw = videoSize.w;
+    } else {
+        //中央部を取得
+        let wk = videoSize.w - targetSize.w;
+        if (wk < 0) {
+            message.innerHTML="サイズ設定不備(target-X)";
+            blnCameraInit = false;
+            return;
+        }
+        wk = wk /2; //中央寄せするので÷2
+
+        targetParam.sx = wk;
+        targetParam.sw = targetSize.w;
+        
+        targetParam.dx = 0;
+        targetParam.dw = targetSize.w;
+    }
+    if (videoSize.h <= targetSize.h) {
+        //元のサイズの方が小さかったらそのまま
+        targetParam.sy = 0;
+        targetParam.sh = videoSize.h;
+        
+        targetParam.dy = 0;
+        targetParam.dh = videoSize.h;
+    } else {
+        //中央部を取得
+        let wk = videoSize.h - targetSize.h;
+        if (wk < 0) {
+            message.innerHTML="サイズ設定不備(target-Y)";
+            blnCameraInit = false;
+            return;
+        }
+        wk = wk /2; //中央寄せするので÷2
+
+        targetParam.sy = wk;
+        targetParam.sh = targetSize.h;
+        
+        targetParam.dy = 0;
+        targetParam.dh = targetSize.h;
+    }
+
+    //バーコードガイドの設定
+    sqParam.valid = true;
+    sqParam.w = targetSize.w;
+    sqParam.h = targetSize.h;
+    sqParam.x = (viewSize.w - targetSize.w) / 2;
+    if (sqParam.x < 0) {
+        sqParam.valid = false;
+    }
+    sqParam.y = (viewSize.h - targetSize.h) / 2;
+    if (sqParam.y < 0) {
+        sqParam.valid = false;
+    }
+    
+    viewParam.init = true;
+}
+
+function toggleScan() {
+    if(warpper.style.visibility=="visible") {
+        scanEnd();
+    } else {
+        scanStart();
+    }
+}
+
+function scanStart() {
+    video.play();
+    //setIntervalだと処理の遅延のかかわらず実行してしまうので都度再帰する。
+    scanningCnt = 0;
+
+    warpper.style.visibility="visible";
+
+    if (blnCameraInit==false) {
+        reserveEnd = setTimeout(() => {
+            warpper.style.visibility="hidden";
+        }, 3000);
+    } else {
+        setTimeout(scanning,0);
+    }
+}
+
+function scanning() {
+    //スキャン本体
+    if (scanningCnt < 0) {
+        return;
+    }
+
+    //パラメータ初期化()
+    initParam();
+
+    scanningCnt++;
+
+    //バーコードエリアに線画
+    barcodeAreaCtx.drawImage(video,targetParam.sx,targetParam.sy,targetParam.sw,targetParam.sh,targetParam.dx,targetParam.dy,targetParam.dw,targetParam.dh);
+
+    //線画からバーコード解析
+    barcodeArea.toBlob(function(blob){
       let reader = new FileReader();
       reader.onload=function(){
-        let config={
-          decoder: {
-            readers: ["codabar_reader"],
-            multiple: false, //同時に複数のバーコードを解析しない
-          },
-          locator:{patchSize:"large",halfSample:false},
-          locate:false,
-          src:reader.result,
-        };
-        Quagga.decodeSingle(config,function(){});
+        qConfig.src=reader.result;
+        Quagga.decodeSingle(qConfig,function(){});
       }
       reader.readAsDataURL(blob);
     });
-    setTimeout(Scan,50,false);
-  }
+    
+    //プレビューエリアに線画
+    //処理が遅くなるような場合は、scanningCntを使ってプレビューの線画を間引く
+    //if (scanningCnt % 2 == 0) {}
+    barViewCtx.drawImage(video,viewParam.sx,viewParam.sy,viewParam.sw,viewParam.sh,viewParam.dx,viewParam.dy,viewParam.dw,viewParam.dh);
 
-  Quagga.onDetected(function (result) {
-    //読み取り誤差が多いため、3回連続で同じ値だった場合に成功とする
-    if(DetectedCode==result.codeResult.code){
-      DetectedCount++;
-    }else{
-      DetectedCount=0;
-      DetectedCode=result.codeResult.code;
+    //バーコードガイドの線画
+    if(sqParam.valid) {
+        barViewCtx.beginPath();
+        barViewCtx.strokeStyle="rgb(255,0,0)";
+        barViewCtx.lineWidth=targetSize.border;
+        barViewCtx.rect(sqParam.x,sqParam.y,sqParam.w,sqParam.h);
+        barViewCtx.stroke();
     }
-    if(DetectedCount>=3){
-      console.log(result.codeResult.code);
-      jan.value+=result.codeResult.code+'\n';
-      jan.scrollTop=jan.scrollHeight;
-      DetectedCode='';
-      DetectedCount=0;
+
+    //再帰
+    setTimeout(scanning,INTERVAL);
+}
+
+function scanEnd() {
+    if (reserveEnd != null) {
+        clearTimeout(reserveEnd);
     }
-  });
-});
+    scanningCnt=-1;
+    video.pause();
+    warpper.style.visibility="hidden";
+    validationCnt = 0;
+    validationCode="";
+}
+
+//エントリーポイント
+initBarcodeScaner();
+
 </script>
-</head>
-<body>
-    <h3>Code Reader</h3>
-    <h4>CODABAR Mode</h4>
-  <div><canvas id="preview"></canvas></div>
-  <textarea id="jan" rows="8" cols="40"></textarea>
-    <p>最下部</p>
 </body>
 </html>

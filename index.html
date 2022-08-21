@@ -64,6 +64,9 @@ window.addEventListener('load',function(event){
       let reader = new FileReader();
       reader.onload=function(){
         let config={
+          constraints: {
+            frameRate: 60
+          },
           decoder: {
             readers: ["ean_reader","ean_8_reader"],
             multiple: false, //同時に複数のバーコードを解析しない

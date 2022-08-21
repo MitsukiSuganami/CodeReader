@@ -13,9 +13,9 @@ const startScanner = () => {
                 successTimeout: 500,
                 codeRepetition: true,
                 tryVertical: true,
-                frameRate: 15,
-                width: 352,
-                height: 288,
+                frameRate: 60,
+                width: 640,
+                height: 480,
                 facingMode: "environment"
             },
         },

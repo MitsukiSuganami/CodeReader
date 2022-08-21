@@ -81,7 +81,7 @@ window.addEventListener('load',function(event){
       reader.onload=function(){
         let config={
           decoder: {
-            readers: ["ean_reader","ean_8_reader"],
+            readers: ["codabar_reader"],
             multiple: false, //同時に複数のバーコードを解析しない
           },
           locator:{patchSize:"large",halfSample:false},
@@ -115,7 +115,8 @@ window.addEventListener('load',function(event){
 </script>
 </head>
 <body>
-    <p>Code Reader</p>
+    <h3>Code Reader</h3>
+    <h4>CODABAR Mode</h4>
   <div><canvas id="preview"></canvas></div>
   <textarea id="jan" rows="8" cols="40"></textarea>
     <p>最下部</p>

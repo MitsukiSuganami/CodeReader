@@ -1,1 +1,12 @@
-
+#photo-area.viewport {
+   height: 240px;
+   width: 320px;
+}
+#photo-area.viewport canvas, video {
+   float: left;
+   height: 240px;
+   width: 320px;
+}
+#photo-area.viewport canvas.drawingBuffer, video.drawingBuffer {
+   margin-left: -320px;
+}

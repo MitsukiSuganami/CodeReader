@@ -13,15 +13,15 @@ const startScanner = () => {
                 successTimeout: 500,
                 codeRepetition: true,
                 tryVertical: true,
-                frameRate: 60,
-                width: 640,
-                height: 480,
+                frameRate: 15,
+                width: 352,
+                height: 288,
                 facingMode: "environment"
             },
         },
         decoder: {
             readers: [
-                "ean_reader"
+                "i2of5_reader"
             ]
         },
 

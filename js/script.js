@@ -1,7 +1,5 @@
 $(function () {
-
     startScanner();
-
 });
 
 const startScanner = () => {
@@ -23,7 +21,7 @@ const startScanner = () => {
         },
         decoder: {
             readers: [
-                "codabar_reader"
+                "ean_reader"
             ]
         },
 

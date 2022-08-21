@@ -21,7 +21,7 @@ const startScanner = () => {
         },
         decoder: {
             readers: [
-                "i2of5_reader"
+                "ean_reader"
             ]
         },
 

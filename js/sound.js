@@ -126,17 +126,31 @@ function successProgram () {
     statusMessage.innerHTML = "読み取り成功";
 
     // ビジーwaitを使う方法
-function sleep(waitMsec) {
-    var startMsec = new Date();
+    function sleep(waitMsec) {
+        var startMsec = new Date();
    
-    // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-    while (new Date() - startMsec < waitMsec);
-  }
+        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+        while (new Date() - startMsec < waitMsec);
+    }
    
-  sleep(3000);
+    sleep(3000);
+
+    statusMessage.innerHTML = "スリープ解除";
 }
 
 function notSuccessProgram () {
     var statusMessage = document.getElementById("statusMessage");
     statusMessage.innerHTML = "同一データです";
+
+    // ビジーwaitを使う方法
+    function sleep(waitMsec) {
+        var startMsec = new Date();
+   
+        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+        while (new Date() - startMsec < waitMsec);
+    }
+   
+    sleep(3000);
+
+    statusMessage.innerHTML = "スリープ解除";
 }

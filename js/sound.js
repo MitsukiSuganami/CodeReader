@@ -103,10 +103,10 @@ const startScanner = () => {
                 var scanSlipCode = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
-                if (slipCode != scanSlipCode) {
-                    successProgram();
-                } else {
+                if (slipCode == scanSlipCode) {
                     notSuccessProgram();
+                } else {
+                    successProgram();
                 }
 
             } else {
@@ -128,5 +128,5 @@ function successProgram () {
 
 function notSuccessProgram () {
     var statusMessage = document.getElementById("statusMessage");
-    statusMessage.innerHTML = "読み取り中/読み取り失敗";
+    statusMessage.innerHTML = "同一データです";
 }

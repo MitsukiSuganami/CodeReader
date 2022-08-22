@@ -124,6 +124,16 @@ function successProgram () {
     document.getElementById("audioElement").play();
     var statusMessage = document.getElementById("statusMessage");
     statusMessage.innerHTML = "読み取り成功";
+
+    // ビジーwaitを使う方法
+function sleep(waitMsec) {
+    var startMsec = new Date();
+   
+    // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+    while (new Date() - startMsec < waitMsec);
+  }
+   
+  sleep(3000);
 }
 
 function notSuccessProgram () {

@@ -82,8 +82,7 @@ const startScanner = () => {
 
     //barcode read call back
     Quagga.onDetected(function (result) {
-        var slipCodeData = document.getElementById("scanResult");
-        var slipCode = slipCodeData.value;
+        var slipCode = document.getElementById("scanResult").value;
         // console.log(result.codeResult.code);
         var splitBefore = result.codeResult.code;
         var scanOriginalCode = document.getElementById("scanOriginal");

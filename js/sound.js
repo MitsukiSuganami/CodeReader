@@ -135,7 +135,7 @@ function successProgram () {
    
     sleep(3000);
 
-    statusMessage.innerHTML = "スリープ解除";
+    statusMessage.innerHTML = "読取できます";
 }
 
 function notSuccessProgram () {

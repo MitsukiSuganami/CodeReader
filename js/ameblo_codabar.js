@@ -94,7 +94,7 @@ const startScanner = () => {
             if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
                 var splitAfter = splitBefore.substr(1, 12); // 1文字目から12文字分切り出す（数字部分）
                 var scanSplitAfter = document.getElementById("scanSplit12"); // 数字部分出力（id設定）
-                scanSplitAfter.innerHTML = spritAfter; // 数字部分 HTML 出力
+                scanSplitAfter.innerHTML = splitAfter; // 数字部分 HTML 出力
                 var splitAllay = []; // 伝票番号格納配列 配列宣言
                 for (let i = 0; i < 3; i++) { // 3回繰り返し
                     splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納

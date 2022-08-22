@@ -103,6 +103,11 @@ const startScanner = () => {
                 var scanSlipCode = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
+                var displaySlipCode = document.getElementById("displaySlipCode");
+                displaySlipCode.innerHTML = slipCode;
+                var displayScanSlipCode = document.getElementById("displayScanSlipCode");
+                displayScanSlipCode.innerHTML = scanSlipCode;
+
                 if (slipCode == scanSlipCode) {
                     notSuccessProgram();
                 } else {

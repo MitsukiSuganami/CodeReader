@@ -90,7 +90,7 @@ const startScanner = () => {
             var startCode = splitBefore.slice(0, 1);
             var endCode = splitBefore.slice(-1);
             if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
-                var splitAfter = splitBefore.slice(1, 12);
+                var splitAfter = splitBefore.slice(1, 13);
                 var splitAllay = [];
                 for (let i = 0; i < 3; i++) {
                     splitAllay.push(splitAfter.substr(i * 4, 4));

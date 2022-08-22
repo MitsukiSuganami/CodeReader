@@ -20,19 +20,19 @@
       tmp_ctx = tmp.getContext("2d");
       jan=document.getElementById("jan");
 
-      //カメラ使用の許可ダイアログが表示される
-      navigator.mediaDevices.getUserMedia(
         //マイクはオフ, カメラの設定   背面カメラを希望する 640×480を希望する
-        {
-          "audio":false,
-          "video":{
-            "facingMode":"environment",
-            "width":{"ideal":640},
-            "height":{"ideal":480},
-            "frameRate":{"ideal":60}
-          }
+      var mediaSetting = {
+        audio: false,
+        video: {
+          facingMode: environment,
+          width: 640,
+          height: 480,
+          frameRate: 60,
+          decodeBarCodeRate: 3
         }
-      ).then( //許可された場合
+      }
+      //カメラ使用の許可ダイアログが表示される
+      navigator.mediaDevices.getUserMedia(mediaSetting).then( //許可された場合
         function(stream){
           video.srcObject = stream;
           //0.5秒毎にスキャンする

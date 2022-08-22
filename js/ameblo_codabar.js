@@ -86,11 +86,18 @@ const startScanner = () => {
         var scanResultCode = document.getElementById("readResult");
         var splitBefore = result.codeResult.code;
         var codeLength = String(splitBefore).length;
-        if (codeLength == 12) {
-            var splitAllay = splitBefore.match(/.{3}/g);
-            scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
+        if (codeLength == 14) {
+            var startCode = splitBefore.slice(0, 1);
+            var endCode = splitBefore.slice(-1);
+            if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
+                var splitAfter = splitBefore.slice(1, 12);
+                var splitAllay = splitAfter.match(/.{3}/g);
+                scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
+            } else {
+                scanResultCode.innerHTML = "ERROR:Not slip number";
+            }
         } else {
-            scanResultCode.innerHTML = "ERROR:Not 12 Numbers";
+            scanResultCode.innerHTML = "ERROR:Not 12 numbers";
         }
     });
 }

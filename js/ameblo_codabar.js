@@ -83,8 +83,10 @@ const startScanner = () => {
     //barcode read call back
     Quagga.onDetected(function (result) {
         console.log(result.codeResult.code);
-        var scanResultCode = document.getElementById("readResult");
         var splitBefore = result.codeResult.code;
+        var scanOriginalCode = document.getElementById("scanOriginal");
+        scanOriginalCode.innerHTML = splitBefore;
+        var scanResultCode = document.getElementById("scanResult");
         var codeLength = String(splitBefore).length;
         if (codeLength == 14) {
             var startCode = splitBefore.slice(0, 1);

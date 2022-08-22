@@ -82,7 +82,7 @@ const startScanner = () => {
 
     //barcode read call back
     Quagga.onDetected(function (result) {
-        var slipCode = document.getElementById("scanResult").value;
+        // var slipCode = document.getElementById("scanResult").value;
         // console.log(result.codeResult.code);
         var splitBefore = result.codeResult.code;
         var scanOriginalCode = document.getElementById("scanOriginal");
@@ -100,6 +100,7 @@ const startScanner = () => {
                 for (let i = 0; i < 3; i++) { // 3回繰り返し
                     splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納
                 }
+                var slipCode = document.getElementById("scanResult").value; // 更新前の伝票番号をHTMLより取得
                 var scanSlipCode = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 

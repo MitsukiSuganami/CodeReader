@@ -104,9 +104,9 @@ const startScanner = () => {
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
                 if (slipCode != scanSlipCode) {
-                    successSound();
+                    successProgram();
                 } else {
-                    ;
+                    notSuccessProgram();
                 }
 
             } else {
@@ -118,7 +118,15 @@ const startScanner = () => {
         }
     });
 }
-function successSound (){
+
+function successProgram () {
     audioElement.currentTime = 0;
     document.getElementById("audioElement").play();
+    var statusMessage = document.getElementById("statusMessage");
+    statusMessage.innerHTML = "読み取り成功";
+}
+
+function notSuccessProgram () {
+    var statusMessage = document.getElementById("statusMessage");
+    statusMessage.innerHTML = "読み取り中/読み取り失敗";
 }

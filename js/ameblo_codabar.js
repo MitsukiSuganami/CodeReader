@@ -100,9 +100,6 @@ const startScanner = () => {
                     splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納
                 }
                 scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2]; // 伝票番号形式に出力
-
-                audioElement.currentTime = 0;
-                document.getElementById("audioElement").play();
             } else {
                 scanResultCode.innerHTML = "ERROR:Not slip number"; // 伝票番号ではない エラー出力
             }

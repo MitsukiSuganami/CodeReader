@@ -82,22 +82,24 @@ const startScanner = () => {
 
     //barcode read call back
     Quagga.onDetected(function (result) {
-        console.log(result.codeResult.code);
+        // console.log(result.codeResult.code);
         var splitBefore = result.codeResult.code;
         var scanOriginalCode = document.getElementById("scanOriginal");
         scanOriginalCode.innerHTML = splitBefore;
         var scanResultCode = document.getElementById("scanResult");
         var codeLength = String(splitBefore).length;
-        if (codeLength == 14) {
-            var startCode = splitBefore.slice(0, 1);
-            var endCode = splitBefore.slice(-1);
+        if (codeLength == 14) { // 読み取ったコードが14桁の場合（スタート・ストップキャラクタを含む）
+            var startCode = splitBefore.substr(0, 1); // 0文字目から1文字分切り出す（スタートキャラクタ）
+            var endCode = splitBefore.substr(13, 1); // 13文字目から1文字分切り出す（ストップキャラクタ）
             if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
-                var splitAfter = splitBefore.slice(1, 13);
-                var splitAllay = [];
-                for (let i = 0; i < 3; i++) {
-                    splitAllay.push(splitAfter.substr(i * 4, 4));
+                var splitAfter = splitBefore.substr(1, 12); // 1文字目から12文字分切り出す（数字部分）
+                var scanSplitAfter = document.getElementById("scanSprit12"); // 数字部分出力（id設定）
+                scanSplitAfter.innerHTML = spritAfter; // 数字部分 HTML 出力
+                var splitAllay = []; // 伝票番号格納配列 配列宣言
+                for (let i = 0; i < 3; i++) { // 3回繰り返し
+                    splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納
                 }
-                scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
+                scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2]; // 伝票番号形式に出力
             } else {
                 scanResultCode.innerHTML = "ERROR:Not slip number";
             }

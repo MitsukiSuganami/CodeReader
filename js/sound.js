@@ -104,8 +104,7 @@ const startScanner = () => {
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
                 if (slipCode != scanSlipCode) {
-                    audioElement.currentTime = 0;
-                    document.getElementById("audioElement").play();
+                    successSound();
                 } else {
                     ;
                 }
@@ -118,4 +117,8 @@ const startScanner = () => {
             scanResultCode.innerHTML = "ERROR:Not 12 numbers"; // 伝票番号欄エラー出力
         }
     });
+}
+function successSound (){
+    audioElement.currentTime = 0;
+    document.getElementById("audioElement").play();
 }

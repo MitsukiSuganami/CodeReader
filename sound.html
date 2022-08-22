@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <title>BarCodeReader</title>
         <link rel="stylesheet" href="css/BarCodeReader.css">
+    </head>
+    <body>
         <script src="js/jquery-3.4.1.min.js"></script>
         <script src="js/quagga.min.js"></script>
         <script src="js/sound.js"></script>
-    </head>
-    <body>
         <audio id="audioElement" src="media/Success.mp3"></audio>
         <header>
             <p class="header-logo">BarCodeReader</p>
@@ -22,6 +22,8 @@
             <h4>取得結果<span id="scanOriginal">-未取得-</span></h4>
             <h4>取得結果（C抜き）<span id="scanSplit12">-未取得-</span></h4>
             <h4>伝票番号<span id="scanResult">-未取得-</span></h4>
+            <p>〔StatusMessage〕</p>
+            <p id="statusMessage">-読取試行前-</p>
         </div>
     </body>
 </html>

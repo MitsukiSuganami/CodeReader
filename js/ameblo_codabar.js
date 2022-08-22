@@ -91,7 +91,7 @@ const startScanner = () => {
             var endCode = splitBefore.slice(-1);
             if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
                 var splitAfter = splitBefore.slice(1, 12);
-                var splitAllay = splitAfter.match(/.{3}/g);
+                var splitAllay = splitAfter.match(/.{4}/g);
                 scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
             } else {
                 scanResultCode.innerHTML = "ERROR:Not slip number";

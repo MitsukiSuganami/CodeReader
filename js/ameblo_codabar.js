@@ -101,8 +101,8 @@ const startScanner = () => {
                 }
                 scanResultCode.innerHTML = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2]; // 伝票番号形式に出力
 
-                document.getElementById("audioElement").currentTime = 0;
-                document.getElementById("audioElement").play()
+                audioElement.currentTime = 0;
+                document.getElementById("audioElement").play();
             } else {
                 scanResultCode.innerHTML = "ERROR:Not slip number"; // 伝票番号ではない エラー出力
             }

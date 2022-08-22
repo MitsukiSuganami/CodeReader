@@ -105,9 +105,9 @@ const startScanner = () => {
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
                 var displaySlipCode = document.getElementById("displaySlipCode");
-                displaySlipCode.innerHTML = slipCode;
+                displaySlipCode.innerHTML = scanSlipCode;
                 var displayScanSlipCode = document.getElementById("displayScanSlipCode");
-                displayScanSlipCode.innerHTML = scanSlipCode;
+                displayScanSlipCode.innerHTML = slipCode;
 
                 if (slipCode == scanSlipCode) {
                     notSuccessProgram();

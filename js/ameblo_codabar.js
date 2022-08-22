@@ -93,7 +93,7 @@ const startScanner = () => {
             var endCode = splitBefore.substr(13, 1); // 13文字目から1文字分切り出す（ストップキャラクタ）
             if (startCode.toUpperCase() === "A".toUpperCase() && endCode.toUpperCase() === "A".toUpperCase()) {
                 var splitAfter = splitBefore.substr(1, 12); // 1文字目から12文字分切り出す（数字部分）
-                var scanSplitAfter = document.getElementById("scanSprit12"); // 数字部分出力（id設定）
+                var scanSplitAfter = document.getElementById("scanSplit12"); // 数字部分出力（id設定）
                 scanSplitAfter.innerHTML = spritAfter; // 数字部分 HTML 出力
                 var splitAllay = []; // 伝票番号格納配列 配列宣言
                 for (let i = 0; i < 3; i++) { // 3回繰り返し

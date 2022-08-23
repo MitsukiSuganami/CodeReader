@@ -160,7 +160,7 @@ const startScanner = () => {
             scanSplitAfter.innerHTML = "ERROR:Not 12 numbers"; // 数字部分欄エラー出力
             scanResultCode.innerHTML = "ERROR:Not 12 numbers"; // 伝票番号欄エラー出力
         }
-//         Quagga.start();
+        // Quagga.start();
     });
 }
 
@@ -180,7 +180,10 @@ function successProgram () {
     displayScanSlipCode.innerHTML = scanSlipCode; // 変換後〔今回〕伝票番号
 
     $(document).ready(function(){
-        setTimeout(function(){ statusMessage.innerHTML = "読取できます"; }, 3000);
+        setTimeout(function(){
+            statusMessage.innerHTML = "読取できます";
+            Quagga.start();
+        }, 3000);
     });
 }
 

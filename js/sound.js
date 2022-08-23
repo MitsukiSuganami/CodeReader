@@ -1,6 +1,10 @@
-$(function () {
+$(window).on('load', function() {
     startScanner();
 });
+
+// $(function () {
+//     startScanner();
+// });
 
 const startScanner = () => {
     Quagga.init({
@@ -100,14 +104,14 @@ const startScanner = () => {
                 for (let i = 0; i < 3; i++) { // 3回繰り返し
                     splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納
                 }
-                var slipCode = document.getElementById("scanResult").value; // 更新前の伝票番号をHTMLより取得
+                var slipCode = document.getElementById("scanResult").textContent; // 更新前の伝票番号をHTMLより取得
                 var scanSlipCode = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式に出力
 
                 var displaySlipCode = document.getElementById("displaySlipCode");
-                displaySlipCode.innerHTML = scanSlipCode;
+                displaySlipCode.innerHTML = slipCode;
                 var displayScanSlipCode = document.getElementById("displayScanSlipCode");
-                displayScanSlipCode.innerHTML = slipCode;
+                displayScanSlipCode.innerHTML = scanSlipCode;
 
                 if (slipCode == scanSlipCode) {
                     notSuccessProgram();
@@ -131,17 +135,46 @@ function successProgram () {
     var statusMessage = document.getElementById("statusMessage");
     statusMessage.innerHTML = "読み取り成功";
 
-    // ビジーwaitを使う方法
-    function sleep(waitMsec) {
-        var startMsec = new Date();
+    // // ビジーwaitを使う方法
+    // function sleep(waitMsec) {
+    //     var startMsec = new Date();
    
-        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-        while (new Date() - startMsec < waitMsec);
-    }
+    //     // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+    //     while (new Date() - startMsec < waitMsec);
+    // }
    
-    sleep(3000);
+    // sleep(3000);
 
-    statusMessage.innerHTML = "読取できます";
+    // setIntervalを使う方法
+    function sleep(waitSec, callbackFunc) {
+    
+        // 経過時間（秒）
+        var spanedSec = 0;
+    
+        // 1秒間隔で無名関数を実行
+        var id = setInterval(function () {
+    
+            spanedSec++;
+    
+            // 経過時間 >= 待機時間の場合、待機終了。
+            if (spanedSec >= waitSec) {
+    
+                // タイマー停止
+                clearInterval(id);
+    
+                // 完了時、コールバック関数を実行
+                if (callbackFunc) callbackFunc();
+            }
+        }, 1000);
+    
+    }
+    
+    sleep(3, function () {
+        statusMessage.innerHTML = "読取できます";
+        // console.log('5秒経過しました！');
+    });
+
+    // statusMessage.innerHTML = "読取できます";
 }
 
 function notSuccessProgram () {

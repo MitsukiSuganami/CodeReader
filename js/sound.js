@@ -130,6 +130,7 @@ const startScanner = () => {
                     splitAllay.push(splitAfter.substr(i * 4, 4)); //0,4,8文字目から4文字ずつ切り出し その後配列へ順番に格納
                 }
                 // var slipCode = document.getElementById("scanResult").textContent; // 更新前の伝票番号をHTMLより取得
+                var displayScanSlipCode = document.getElementById("scanResult").textContent; // 更新前の伝票番号をHTMLより取得
                 var scanSlipCode = splitAllay[0] + "-" + splitAllay[1] + "-" + splitAllay[2];
                 scanResultCode.innerHTML = scanSlipCode; // 伝票番号形式にHTML出力
 
@@ -139,7 +140,7 @@ const startScanner = () => {
                 // displayScanSlipCode.innerHTML = scanSlipCode; // 変換後〔今回〕伝票番号
 
                 // （条件分岐）前回読み取った伝票番号と今回読み込んだ伝票番号が同じかどうか
-                if (slipCode == scanSlipCode) {
+                if (displayScanSlipCode == scanSlipCode) {
                     // // （分岐）同じだった場合
                     // notSuccessProgram();
                     ; // 何もしない

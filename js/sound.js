@@ -180,10 +180,7 @@ function successProgram () {
     displayScanSlipCode.innerHTML = scanSlipCode; // 変換後〔今回〕伝票番号
 
     $(document).ready(function(){
-        setTimeout(function(){
-            statusMessage.innerHTML = "読取できます";
-            // Quagga.start();
-        }, 3000);
+        setTimeout(function(){ statusMessage.innerHTML = "読取できます"; }, 3000);
     });
 }
 

@@ -23,3 +23,7 @@ p.header-logo {
 #photo-area.viewport canvas.drawingBuffer, video.drawingBuffer {
     margin-left: -320px;
 }
+#errorMessage {
+    color: red;
+    font-weight: bold;
+}

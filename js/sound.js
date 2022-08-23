@@ -1,10 +1,15 @@
 $(window).on('load', function() {
+    preloadAudio();
     startScanner();
 });
 
 // $(function () {
 //     startScanner();
 // });
+
+function preloadAudio () {
+    document.getElementById("audioElement").load();
+} 
 
 const startScanner = () => {
     Quagga.init({

@@ -140,8 +140,9 @@ const startScanner = () => {
 
                 // （条件分岐）前回読み取った伝票番号と今回読み込んだ伝票番号が同じかどうか
                 if (slipCode == scanSlipCode) {
-                    // （分岐）同じだった場合
-                    notSuccessProgram();
+                    // // （分岐）同じだった場合
+                    // notSuccessProgram();
+                    ; // 何もしない
                 } else {
                     // （分岐）同じではなかった場合
                     successProgram();
@@ -172,12 +173,12 @@ function successProgram () {
     });
 }
 
-// （条件分岐）前回読み取った伝票番号と今回読み込んだ伝票番号が同じではなかった場合の処理
-function notSuccessProgram () {
-    var statusMessage = document.getElementById("statusMessage");
-    statusMessage.innerHTML = "同一データです";
+// // （条件分岐）前回読み取った伝票番号と今回読み込んだ伝票番号が同じではなかった場合の処理
+// function notSuccessProgram () {
+//     var statusMessage = document.getElementById("statusMessage");
+//     statusMessage.innerHTML = "同一データです";
 
-    $(document).ready(function(){
-        setTimeout(function(){ statusMessage.innerHTML = "スリープ解除"; }, 3000);
-    });
-}
+//     $(document).ready(function(){
+//         setTimeout(function(){ statusMessage.innerHTML = "スリープ解除"; }, 3000);
+//     });
+// }

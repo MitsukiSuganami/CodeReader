@@ -7,6 +7,11 @@
     </head>
     <body>
         <audio id="audioElement" src="media/Success.mp3"></audio>
+        <script>
+        function preloadAudio () {
+            document.getElementById("audioElement").load();
+        } 
+        </script>
         <header>
             <p class="header-logo">BarCodeReader</p>
         </header>

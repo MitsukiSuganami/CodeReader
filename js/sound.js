@@ -102,6 +102,7 @@ const startScanner = () => {
 
     //barcode read call back
     Quagga.onDetected(function (result) {
+        Quagga.stop();
         // var slipCode = document.getElementById("scanResult").value;
         // console.log(result.codeResult.code);
         var splitBefore = result.codeResult.code;
@@ -159,6 +160,7 @@ const startScanner = () => {
             scanSplitAfter.innerHTML = "ERROR:Not 12 numbers"; // 数字部分欄エラー出力
             scanResultCode.innerHTML = "ERROR:Not 12 numbers"; // 伝票番号欄エラー出力
         }
+        Quagga.start();
     });
 }
 
